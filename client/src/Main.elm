@@ -51,10 +51,6 @@ type alias PoemSearchParams =
     }
 
 
-type alias PoetryDBQuery =
-    { poetryDBQueryParams : List PoetryDBParam }
-
-
 queryableFields : PoemSearchParams -> List String
 queryableFields params =
     []
@@ -136,22 +132,6 @@ queryableVals params =
            )
 
 
-
--- sort of want a non-empty list of these, otherwise json may differ?
--- list of these is more flexible than a record with one of each
--- what if there is meaningful support for multiple author name parts
--- what is the message (kinda depends on UI? what is the least
--- dependent on the UI???)
--- sum type for param is good for disambiguation
-
-
-type PoetryDBParam
-    = AuthorNamePart String MatchType
-    | TitlePart String MatchType
-    | LinePart String MatchType
-    | LineCount Int MatchType
-
-
 type MatchType
     = Exact
     | Inexact
@@ -175,74 +155,6 @@ boolToMatch b =
 
         False ->
             Inexact
-
-
-poetryDBInputField : PoetryDBParam -> String
-poetryDBInputField param =
-    case param of
-        AuthorNamePart _ _ ->
-            "author"
-
-        TitlePart _ _ ->
-            "title"
-
-        LinePart _ _ ->
-            "lines"
-
-        LineCount _ _ ->
-            "linecount"
-
-
-poetryDBMatchType : PoetryDBParam -> String
-poetryDBMatchType param =
-    case param of
-        AuthorNamePart _ t ->
-            case t of
-                Exact ->
-                    ":abs"
-
-                _ ->
-                    ""
-
-        TitlePart _ t ->
-            case t of
-                Exact ->
-                    ":abs"
-
-                _ ->
-                    ""
-
-        LinePart _ t ->
-            case t of
-                Exact ->
-                    ":abs"
-
-                _ ->
-                    ""
-
-        LineCount _ t ->
-            case t of
-                Exact ->
-                    ":abs"
-
-                _ ->
-                    ""
-
-
-poetryDBInputVal : PoetryDBParam -> String
-poetryDBInputVal param =
-    case param of
-        LineCount i _ ->
-            String.fromInt i
-
-        AuthorNamePart s _ ->
-            s
-
-        TitlePart s _ ->
-            s
-
-        LinePart s _ ->
-            s
 
 
 auroraLeighUrl : String
