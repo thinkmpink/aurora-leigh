@@ -414,7 +414,13 @@ poetryDBDecoder =
             (JD.field "lines" <|
                 JD.list JD.string
             )
-            (JD.field "linecount" JD.int)
+            (JD.field "linecount" <|
+                JD.map
+                    (Maybe.withDefault 0
+                        << String.toInt
+                    )
+                    JD.string
+            )
 
 
 subscriptions : Model -> Sub msg
