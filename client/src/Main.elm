@@ -432,11 +432,15 @@ view : Model -> Html.Html Msg
 view model =
     case model of
         Loading ->
-            div [] [ text "Loading poem text..." ]
+            div []
+                [ viewHeader Loading
+                , text "Loading poem text..."
+                ]
 
         Failure e ->
             div []
-                [ case e of
+                [ viewHeader <| Failure e
+                , case e of
                     Http.BadUrl u ->
                         text <| "Bad url: " ++ u
 
@@ -455,7 +459,8 @@ view model =
 
         ComposeSearch params ->
             div []
-                [ ul []
+                [ viewHeader <| ComposeSearch params
+                , ul []
                     [ li []
                         [ viewInput "text"
                             "Author's name, or part of their name"
@@ -501,13 +506,26 @@ view model =
                 ]
 
         HasText s ->
-            div [] [ text s ]
+            div []
+                [ viewHeader <| HasText s
+                , text s
+                ]
 
         HasSearchResults results ->
             div []
-                [ ul [] <|
+                [ viewHeader <| HasSearchResults results
+                , ul [] <|
                     List.map viewResult results
                 ]
+
+
+viewHeader : Model -> Html msg
+viewHeader model =
+    div []
+        [ h1 [] [ text "Spansion" ]
+        , h3 [] [ text "Play with spans of poetry" ]
+        , h4 [] [ text "Michael Pinkham's project to learn web apps" ]
+        ]
 
 
 viewResult : PoemSearchResult -> Html msg
