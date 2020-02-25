@@ -469,6 +469,9 @@ viewResult item =
         ([ div
             [ onClick <|
                 SelectPoem item
+            , style "color" "blue"
+            , style "text-decoration" "underline"
+            , style "cursor" "pointer"
             ]
             [ text item.poemTitle ]
          , div [] [ text item.poemAuthor ]
