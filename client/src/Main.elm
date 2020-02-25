@@ -22,6 +22,7 @@ type Msg
     = GotText (Result Http.Error String)
     | Search PoemSearchParams
     | GotSearchResults (Result Http.Error (List PoemSearchResult))
+    | SelectPoem PoemSearchResult
     | SetAuthorNamePart String
     | SetAuthorNameMatch MatchType
     | SetTitlePart String
@@ -190,6 +191,7 @@ type Model
     = Loading
     | ComposeSearch PoemSearchParams
     | HasSearchResults (List PoemSearchResult)
+    | ShowPoem PoemSearchResult (List PoemSearchResult)
     | Failure Http.Error
     | HasText String
 
@@ -222,6 +224,18 @@ update msg model =
                     ( HasSearchResults searchResults
                     , Cmd.none
                       -- eventually cache??
+                    )
+
+        SelectPoem poem ->
+            case model of
+                HasSearchResults results ->
+                    ( ShowPoem poem results
+                    , Cmd.none
+                    )
+
+                _ ->
+                    ( Loading
+                    , Cmd.none
                     )
 
         SetAuthorNamePart name ->
@@ -430,6 +444,15 @@ view model =
                     List.map viewResult results
                 ]
 
+        ShowPoem poem searchResults ->
+            div []
+                ([ viewHeader <| HasSearchResults searchResults
+                 , h5 [] [ text poem.poemTitle ]
+                 , em [] [ text poem.poemAuthor ]
+                 ]
+                    ++ List.map (p [] << List.singleton << text) poem.poemText
+                )
+
 
 viewHeader : Model -> Html msg
 viewHeader model =
@@ -440,10 +463,14 @@ viewHeader model =
         ]
 
 
-viewResult : PoemSearchResult -> Html msg
+viewResult : PoemSearchResult -> Html Msg
 viewResult item =
     li []
-        ([ text item.poemTitle
+        ([ div
+            [ onClick <|
+                SelectPoem item
+            ]
+            [ text item.poemTitle ]
          , div [] [ text item.poemAuthor ]
          ]
             ++ (case List.head item.poemText of
